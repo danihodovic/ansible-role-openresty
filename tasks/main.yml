@@ -30,13 +30,13 @@
   template:
     src: ../templates/{{ item }}
     dest: '{{ nginx_conf_dir }}/conf.d'
-  loop: '{{ openresty_includes }}'
+  loop: '{{ openresty_includes | default([])}}'
 
 - name: Template the vhosts
   copy:
     content: '{{ item.value }}'
     dest: '{{ nginx_conf_dir }}/conf.d/vhost_{{ item.key }}.conf'
-  loop: '{{ openresty_vhosts | dict2items }}'
+  loop: '{{ openresty_vhosts | default({}) | dict2items }}'
 
 - name: Get sha sum of current directory
   register: new_shasum
