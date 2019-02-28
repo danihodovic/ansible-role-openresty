@@ -11,26 +11,27 @@ config.
   hosts: localhost
   vars:
     ansible_become: true
-    openresty_vhosts:
-      default: |
-        server {
-          # if no Host match, close the connection to prevent host spoofing
-          return 444;
-        }
-      myserver: |
-        server {
-          server myserver.org;
-          location / {
-            proxy_pass: http://mycontainer;
-          }
-        }
-    openresty_includes:
-      - proxy.conf
-      - rate_limit.conf
-      - prometheus_metrics.conf
   tasks:
     - import_role:
         name: ansible-role-openresty
+      vars:
+        openresty_vhosts:
+          default: |
+            server {
+              # if no Host match, close the connection to prevent host spoofing
+              return 444;
+            }
+          myserver: |
+            server {
+              server myserver.org;
+              location / {
+                proxy_pass: http://mycontainer;
+              }
+            }
+        openresty_includes:
+          - proxy.conf
+          - rate_limit.conf
+          - prometheus_metrics.conf
 ```
 
 ### Requirements
