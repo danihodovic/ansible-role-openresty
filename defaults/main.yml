@@ -1,0 +1,11 @@
+---
+# TODO rename all vars
+nginx_image_name: danihodovic/openresty
+nginx_image_tag: 1.13.6.2-2-alpine-fat
+nginx_image: '{{ nginx_image_name }}:{{ nginx_image_tag}}'
+nginx_container_name: nginx
+nginx_conf_dir: /usr/local/openresty/nginx/ansible-conf/
+nginx_port: 80
+nginx_metrics_port: 9145
+nginx_rate_limit: 120r/m
+nginx_rate_limit_burst: 20

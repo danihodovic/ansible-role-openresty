@@ -1,0 +1,80 @@
+---
+- name: Create nginx dirs on host
+  file:
+    state: directory
+    path: '{{ nginx_conf_dir }}/conf.d'
+    recurse: true
+
+- name: Get sha sum of current directory
+  register: old_shasum
+  # yamllint disable-line rule:line-length
+  shell: 'find {{ nginx_conf_dir }} -type f \( -exec sha1sum {} \; \) | sha1sum'
+
+- name: Purge the current directory
+  file:
+    state: absent
+    path: '{{ nginx_conf_dir }}'
+
+- name: Create nginx dirs on host
+  file:
+    state: directory
+    path: '{{ nginx_conf_dir }}/conf.d'
+    recurse: true
+
+- name: Template nginx.conf
+  template:
+    src: ../templates/nginx.conf
+    dest: '{{ nginx_conf_dir }}'
+
+- name: Template the includes
+  template:
+    src: ../templates/{{ item }}
+    dest: '{{ nginx_conf_dir }}/conf.d'
+  loop: '{{ openresty_includes }}'
+
+- name: Template the vhosts
+  copy:
+    content: '{{ item.value }}'
+    dest: '{{ nginx_conf_dir }}/conf.d/vhost_{{ item.key }}.conf'
+  loop: '{{ openresty_vhosts | dict2items }}'
+
+- name: Get sha sum of current directory
+  register: new_shasum
+  # yamllint disable-line rule:line-length
+  shell: 'find {{ nginx_conf_dir }} -type f \( -exec sha1sum {} \; \) | sha1sum'
+
+- name: Trigger a restart if the files changed
+  changed_when: old_shasum.stdout != new_shasum.stdout
+  shell: /bin/true
+  notify: restart_nginx
+
+- name: Check config
+  docker_container:
+    image: '{{ nginx_image }}'
+    name: nginx-check-config
+    command:
+      - /usr/local/openresty/bin/openresty
+      - -t
+      - -c
+      - '{{ nginx_conf_dir }}/nginx.conf'
+    detach: false
+    cleanup: true
+    volumes:
+      - '{{ nginx_conf_dir }}:{{ nginx_conf_dir }}'
+
+- name: Start nginx
+  notify: health_check_nginx
+  docker_container:
+    image: '{{ nginx_image }}'
+    name: '{{ nginx_container_name }}'
+    restart_policy: unless-stopped
+    networks: '{{ docker_networks | default(omit) }}'
+    command:
+      - /usr/local/openresty/bin/openresty
+      - -g 'daemon off;'
+      - -c '{{ nginx_conf_dir }}/nginx.conf'
+    volumes:
+      - '{{ nginx_conf_dir }}:{{ nginx_conf_dir }}'
+    ports:
+      - '80:80'
+      - '9145:9145'
