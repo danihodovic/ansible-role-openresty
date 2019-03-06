@@ -59,8 +59,8 @@
       - '{{ nginx_conf_dir }}/nginx.conf'
     detach: false
     cleanup: true
-    volumes:
-      - '{{ nginx_conf_dir }}:{{ nginx_conf_dir }}'
+    # yamllint disable-line rule:line-length
+    volumes: '{{ [nginx_conf_dir + ":" + nginx_conf_dir ] + nginx_docker_volumes }}'
 
 - name: Start nginx
   notify: health_check_nginx
@@ -73,8 +73,8 @@
       - /usr/local/openresty/bin/openresty
       - -g 'daemon off;'
       - -c '{{ nginx_conf_dir }}/nginx.conf'
-    volumes:
-      - '{{ nginx_conf_dir }}:{{ nginx_conf_dir }}'
+    # yamllint disable-line rule:line-length
+    volumes: '{{ [nginx_conf_dir + ":" + nginx_conf_dir ] + nginx_docker_volumes }}'
     ports:
       - '80:80'
       - '9145:9145'
