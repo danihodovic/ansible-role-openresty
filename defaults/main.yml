@@ -9,3 +9,7 @@ nginx_metrics_port: 9145
 nginx_rate_limit: 120r/m
 nginx_rate_limit_burst: 20
 nginx_docker_volumes: []
+nginx_docker_ports:
+  - '80:80'
+  - '9145:9145'
+nginx_docker_additional_ports: []

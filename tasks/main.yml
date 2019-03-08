@@ -75,6 +75,4 @@
       - -c '{{ nginx_conf_dir }}/nginx.conf'
     # yamllint disable-line rule:line-length
     volumes: '{{ [nginx_conf_dir + ":" + nginx_conf_dir ] + nginx_docker_volumes }}'
-    ports:
-      - '80:80'
-      - '9145:9145'
+    ports: '{{ nginx_docker_ports + nginx_docker_additional_ports }}'
