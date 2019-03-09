@@ -1,6 +1,6 @@
 ---
 nginx_image_name: danihodovic/openresty
-nginx_image_tag: 1.13.6.2-2-alpine-fat
+nginx_image_tag: 1.15.8.1rc1-0-alpine-fat
 nginx_image: '{{ nginx_image_name }}:{{ nginx_image_tag}}'
 nginx_container_name: nginx
 nginx_conf_dir: /usr/local/openresty/nginx/ansible-conf/
