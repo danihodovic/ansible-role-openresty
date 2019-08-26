@@ -9,7 +9,7 @@
 - name: Health check
   listen: health_check_nginx
   uri:
-    url: 'http://localhost:{{ nginx_port }}/health'
+    url: 'http://localhost:{{ nginx_port }}/health/'
     status_code: 200
     timeout: 1
   register: health_check_nginx
