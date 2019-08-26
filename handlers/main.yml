@@ -1,11 +1,4 @@
 ---
-- name: Restart nginx
-  listen: restart_nginx
-  notify: health_check_nginx
-  docker_container:
-    name: '{{ nginx_container_name }}'
-    restart: true
-
 - name: Health check
   listen: health_check_nginx
   uri:
