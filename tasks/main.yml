@@ -21,6 +21,10 @@
     src: ../templates/nginx.conf
     dest: '{{ nginx_conf_dir }}'
 
+- name: Create SSL domain regex
+  set_fact:
+    openresty_ssl_domain_regex: '{{ openresty_ssl_domains|join("|") }}'
+
 - name: Template the includes
   template:
     src: ../templates/{{ item }}
