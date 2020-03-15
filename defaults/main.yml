@@ -8,9 +8,12 @@ nginx_port: 80
 nginx_metrics_port: 9145
 nginx_rate_limit: 120r/m
 nginx_rate_limit_burst: 20
-nginx_docker_volumes: []
+# SSL cert dir: https://github.com/auto-ssl/lua-resty-auto-ssl#dir
+nginx_docker_volumes:
+  - '/etc/resty-auto-ssl:/etc/resty-auto-ssl'
 nginx_docker_ports:
   - '80:80'
+  - '443:443'
   - '9145:9145'
 nginx_docker_additional_ports: []
 nginx_auto_ssl_config: |
