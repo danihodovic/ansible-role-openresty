@@ -76,7 +76,7 @@ For running Openresty with auto SSL the following additions are needed:
             }
         openresty_includes:
           - ssl.conf
-          - proxy-conf
+          - proxy.conf
           - logging.conf
         openresty_ssl_domains:
           - findwork.dev
