@@ -13,6 +13,10 @@ config.
   vars:
     ansible_become: true
   tasks:
+    - name: Create a network
+      docker_network:
+        name: test_default
+
     - import_role:
         name: ansible-role-openresty
       vars:
@@ -26,13 +30,16 @@ config.
             server {
               server myserver.org;
               location / {
-                proxy_pass: http://mycontainer;
+                set $proxy_address mycontainer:5050;
+                proxy_pass http://$proxy_address;
               }
             }
         openresty_includes:
           - proxy.conf
           - rate_limit.conf
           - prometheus_metrics.conf
+        docker_networks:
+          - name: test_default
 ```
 
 ### With lua-resty-auto-ssl
@@ -70,6 +77,21 @@ For running Openresty with auto SSL the following additions are needed:
           - findwork.dev
 ```
 
+### Using proxy.conf
+
+Proxy.conf will include the docker dns resolver `127.0.0.11` [which requires a user defined network](https://github.com/docker/compose/issues/3412#issuecomment-260780702).
+
+This role will check the configuration so ensure you use variables when using `proxy_pass` otherwise the host will not be found.
+
+```nginx
+location / {
+  add_header Content-Type text/plain;
+  set $proxy_address myserver:5050;
+  proxy_pass http://$proxy_address;
+}
+```
+
 ## Requirements
+
 - docker daemon installed on the host
 - docker pip library installed on the host `pip install docker`

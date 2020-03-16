@@ -4,6 +4,13 @@ FROM openresty/openresty:1.15.8.1rc1-0-alpine-fat
 RUN apk add --update openssl && \
     rm -rf /var/cache/apk/*
 
+RUN mkdir /etc/resty-auto-ssl
+# Generate fallback ssl cert
+RUN openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 \
+    -subj '/CN=sni-support-required-for-valid-ssl' \
+    -keyout /etc/ssl/resty-auto-ssl-fallback.key \
+    -out /etc/ssl/resty-auto-ssl-fallback.crt
+
 # Install LuaRocks, does not support opm
 # https://github.com/auto-ssl/lua-resty-auto-ssl/issues/45#issuecomment-333378971
 RUN wget http://luarocks.org/releases/luarocks-3.3.1.tar.gz && \
@@ -18,12 +25,4 @@ RUN wget http://luarocks.org/releases/luarocks-3.3.1.tar.gz && \
 
 RUN luarocks install lua-resty-auto-ssl
 
-RUN mkdir /etc/resty-auto-ssl
-
 RUN opm install knyar/nginx-lua-prometheus ledgetech/lua-resty-http
-
-# Generate fallback ssl cert
-RUN openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 \
-    -subj '/CN=sni-support-required-for-valid-ssl' \
-    -keyout /etc/ssl/resty-auto-ssl-fallback.key \
-    -out /etc/ssl/resty-auto-ssl-fallback.crt
