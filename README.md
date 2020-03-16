@@ -54,6 +54,10 @@ For running Openresty with auto SSL the following additions are needed:
   hosts: localhost
   become: true
   tasks:
+    - name: Create a network
+      docker_network:
+        name: test_default
+
     - import_role:
         name: ansible-openresty
       vars:
@@ -72,9 +76,12 @@ For running Openresty with auto SSL the following additions are needed:
             }
         openresty_includes:
           - ssl.conf
+          - proxy-conf
           - logging.conf
         openresty_ssl_domains:
           - findwork.dev
+        docker_networks:
+          - name: test_default
 ```
 
 ### Using proxy.conf
