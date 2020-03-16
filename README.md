@@ -66,8 +66,8 @@ For running Openresty with auto SSL the following additions are needed:
               {{ nginx_auto_ssl_config|indent(2) }}
 
               location / {
-                add_header Content-Type text/plain;
-                return 200 'Hello HTTPS world!';
+                set $proxy_address mycontainer:5050;
+                proxy_pass http://$proxy_address;
               }
             }
         openresty_includes:
@@ -85,7 +85,6 @@ This role will check the configuration so ensure you use variables when using `p
 
 ```nginx
 location / {
-  add_header Content-Type text/plain;
   set $proxy_address myserver:5050;
   proxy_pass http://$proxy_address;
 }
