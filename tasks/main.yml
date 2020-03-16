@@ -21,11 +21,22 @@
     src: ../templates/nginx.conf
     dest: '{{ nginx_conf_dir }}'
 
+- name: Create SSL domain regex
+  set_fact:
+    openresty_ssl_domain_regex: '{{ openresty_ssl_domains|join("|") }}'
+
 - name: Template the includes
   template:
     src: ../templates/{{ item }}
     dest: '{{ nginx_conf_dir }}/conf.d'
   loop: '{{ openresty_includes | default([])}}'
+
+- name: Strip resolver from SSL conf
+  lineinfile:
+    path: '{{ nginx_conf_dir }}/conf.d/ssl.conf'
+    state: absent
+    regexp: "resolver"
+  when: '"proxy.conf" in openresty_includes and "ssl.conf" in openresty_includes'  # yamllint disable-line rule:line-length
 
 - name: Template the vhosts
   copy:
