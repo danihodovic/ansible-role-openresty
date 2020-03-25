@@ -5,6 +5,12 @@ Role to deploy a Docker container with Openresty.
 Includes opt-in config for rate limiting, Prometheus metrics and default proxy
 config.
 
+# TODO CI
+- converge
+- verify
+- idempotence
+- add health checks without duplicate server blocks
+
 ## Examples
 
 ```yml

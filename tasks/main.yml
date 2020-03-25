@@ -1,75 +1,45 @@
 ---
-- name: Create nginx dirs on host
-  file:
-    state: directory
-    path: '{{ nginx_conf_dir }}/conf.d'
-    recurse: true
+- when: '"ssl.conf" in openresty_includes_builtin'
+  block:
+    - name: 'Check mandatory variables are defined'
+      assert:
+        that:
+          - openresty_ssl_domains is defined
 
-# Note: Do not purge the entire directory and replace it with a new one.
-# Docker will not notice the changes
-- name: Purge the current directory
-  shell: 'rm -rf {{ nginx_conf_dir }}/*'
+    - set_fact:
+        openresty_ssl_domain_regex: '{{ openresty_ssl_domains|join("|") }}'
 
-- name: Create nginx dirs on host
-  file:
-    state: directory
-    path: '{{ nginx_conf_dir }}/conf.d'
-    recurse: true
+- set_fact:
+    openresty_includes:
+      - content: '{{ openresty_conf }}'
+        dest: nginx.conf
 
-- name: Template nginx.conf
-  template:
-    src: ../templates/nginx.conf
-    dest: '{{ nginx_conf_dir }}'
+- set_fact:
+    openresty_includes: >-
+      {{ openresty_includes + [{ "content": item.value, "dest": "conf.d/" + item.key }]}}
+  loop: '{{ openresty_includes_extras | dict2items }}'
 
-- name: Create SSL domain regex
-  set_fact:
-    openresty_ssl_domain_regex: '{{ openresty_ssl_domains|join("|") }}'
+- set_fact:
+    openresty_includes: >-
+      {{ openresty_includes + [{ "content": lookup("template", item), "dest": "conf.d/" + item }]}}
+  loop: '{{ openresty_includes_builtin }}'
 
-- name: Template the includes
-  template:
-    src: ../templates/{{ item }}
-    dest: '{{ nginx_conf_dir }}/conf.d'
-  loop: '{{ openresty_includes | default([])}}'
+- name: Template the config files
+  notify: reload_openresty
+  template_configs:
+    docker_image: '{{ openresty_image }}'
+    config_dir: '{{ openresty_conf_dir }}'
+    configs: '{{ openresty_includes }}'
 
-- name: Strip resolver from SSL conf
-  lineinfile:
-    path: '{{ nginx_conf_dir }}/conf.d/ssl.conf'
-    state: absent
-    regexp: "resolver"
-  when: '"proxy.conf" in openresty_includes and "ssl.conf" in openresty_includes'  # yamllint disable-line rule:line-length
-
-- name: Template the vhosts
-  copy:
-    content: '{{ item.value }}'
-    dest: '{{ nginx_conf_dir }}/conf.d/vhost_{{ item.key }}.conf'
-  loop: '{{ openresty_vhosts | default({}) | dict2items }}'
-
-- name: Check config
+- name: Start openresty
   docker_container:
-    image: '{{ nginx_image }}'
-    name: nginx-check-config
-    command:
-      - /usr/local/openresty/bin/openresty
-      - -t
-      - -c
-      - '{{ nginx_conf_dir }}/nginx.conf'
-    detach: false
-    cleanup: true
-    # yamllint disable-line rule:line-length
-    volumes: '{{ [nginx_conf_dir + ":" + nginx_conf_dir ] + nginx_docker_volumes }}'
-
-- name: Start nginx
-  notify: health_check_nginx
-  docker_container:
-    image: '{{ nginx_image }}'
-    restart: true
-    name: '{{ nginx_container_name }}'
+    image: '{{ openresty_image }}'
+    name: '{{ openresty_container_name }}'
     restart_policy: unless-stopped
-    networks: '{{ docker_networks | default(omit) }}'
+    networks: '{{ openresty_docker_networks }}'
     command:
-      - /usr/local/openresty/bin/openresty
+      - 'openresty'
       - -g 'daemon off;'
-      - -c '{{ nginx_conf_dir }}/nginx.conf'
-    # yamllint disable-line rule:line-length
-    volumes: '{{ [nginx_conf_dir + ":" + nginx_conf_dir ] + nginx_docker_volumes }}'
-    ports: '{{ nginx_docker_ports + nginx_docker_additional_ports }}'
+      - -c '{{ openresty_conf_dir }}/nginx.conf'
+    volumes: '{{ openresty_docker_volumes }}'
+    ports: '{{ openresty_docker_ports }}'

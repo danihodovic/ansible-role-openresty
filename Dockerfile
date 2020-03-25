@@ -1,4 +1,6 @@
-FROM openresty/openresty:1.15.8.1rc1-0-alpine-fat
+FROM openresty/openresty:latest
+
+COPY /usr/local/openresty/bin/openresty /usr/local/bin/
 
 # SSL dependency
 RUN apk add --update openssl && \

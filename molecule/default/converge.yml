@@ -1,0 +1,31 @@
+---
+- name: Converge
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Create file that should be removed
+      changed_when: false
+      file:
+        state: directory
+        path: /etc/ansible-role-openresty/conf.d/
+        recurse: true
+
+    - name: Create file that should be removed
+      changed_when: false
+      file:
+        state: touch
+        path: /etc/ansible-role-openresty/conf.d/foo
+
+    - name: Include ansible-role-openresty
+      include_role:
+        name: ansible-role-openresty
+      vars:
+        openresty_includes_extras:
+          server.conf: |
+            server {
+              server_name www.foo.com;
+            }
+        openresty_ssl_domains: ['foo.com']
+        openresty_includes_builtin:
+          - ssl.conf
+          - proxy.conf

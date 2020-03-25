@@ -1,11 +1,4 @@
 ---
-- name: Health check
-  listen: health_check_nginx
-  uri:
-    url: 'http://localhost:{{ nginx_port }}/health/'
-    status_code: 200
-    timeout: 1
-  register: health_check_nginx
-  retries: 10
-  delay: 1
-  until: health_check_nginx.status == 200
+- name: Reload
+  listen: reload_openresty
+  shell: docker exec openresty openresty -s reload
