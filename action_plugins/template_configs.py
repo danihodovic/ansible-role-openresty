@@ -39,6 +39,7 @@ class ActionModule(ActionBase):
         )
 
         self.docker_image = module_args["docker_image"]
+        self.docker_volumes = module_args["docker_volumes"]
         config_dir = module_args["config_dir"]
         config_file = Path(config_dir) / "nginx.conf"
         configs = module_args["configs"]
@@ -74,7 +75,7 @@ class ActionModule(ActionBase):
             result["changed"] = True
 
             # Remove old config files for idempotency
-            self._connection._shell.remove(f"{config_dir}/*", recurse=True)
+            self._connection._shell.remove(config_dir + "/*", recurse=True)
             # Template configs
             for entry in configs:
                 path = Path(config_dir) / entry["dest"]
@@ -113,7 +114,9 @@ class ActionModule(ActionBase):
                 "command": ["openresty", "-T", "-c", config_path,],
                 "detach": "false",
                 "cleanup": "true",
-                "volumes": [f"{parent_dir}:{parent_dir}"],
+                "volumes": (
+                    [str(parent_dir) + ":" + str(parent_dir)] + self.docker_volumes
+                ),
             },
         )
         return _clean_configs(check_config["container"]["Output"])
@@ -126,6 +129,7 @@ class ActionModule(ActionBase):
             "dest": dest,
             "content": content,
             "src": src,
+            "force": "true",
         }
         res = Copy(
             task=task,

@@ -1,4 +1,5 @@
 ---
 - name: Reload
   listen: reload_openresty
-  shell: docker exec openresty openresty -s reload
+  shell: >-
+    docker exec openresty openresty -s reload -c {{ openresty_conf_dir }}/nginx.conf

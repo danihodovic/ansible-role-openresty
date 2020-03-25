@@ -20,6 +20,7 @@ openresty_docker_volumes:
   - '{{ openresty_conf_dir }}:{{ openresty_conf_dir }}'
   - '/etc/resty-auto-ssl:/etc/resty-auto-ssl'
 
+openresty_docker_network_mode: 'bridge'
 openresty_docker_networks: []
 
 openresty_auto_ssl_config: |
