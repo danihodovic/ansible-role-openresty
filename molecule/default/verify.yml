@@ -1,0 +1,21 @@
+---
+- name: Verify
+  hosts: localhost
+  tasks:
+    - name: Assert that the files are created
+      changed_when: false
+      shell: 'cat /etc/ansible-role-openresty/{{ item }}'
+      loop:
+        - nginx.conf
+        - conf.d/server.conf
+        - conf.d/ssl.conf
+        - conf.d/proxy.conf
+
+    - stat:
+        path: /etc/ansible-role-openresty/conf.d/foo
+      register: foo_stat
+
+    - name: Assert that other files are removed
+      assert:
+        that:
+          - not foo_stat.stat.exists

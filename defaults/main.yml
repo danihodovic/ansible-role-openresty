@@ -1,27 +1,36 @@
 ---
-nginx_image_name: danihodovic/openresty
-nginx_image_tag: 1.15.8.1rc1-0-alpine-fat
-nginx_image: '{{ nginx_image_name }}:{{ nginx_image_tag}}'
-nginx_container_name: nginx
-nginx_conf_dir: /usr/local/openresty/nginx/ansible-conf/
-nginx_port: 80
-nginx_metrics_port: 9145
-nginx_rate_limit: 120r/m
-nginx_rate_limit_burst: 20
-# SSL cert dir: https://github.com/auto-ssl/lua-resty-auto-ssl#dir
-nginx_docker_volumes:
-  - '/etc/resty-auto-ssl:/etc/resty-auto-ssl'
-nginx_docker_ports:
+openresty_image_name: danihodovic/openresty
+openresty_image_tag: latest
+openresty_image: '{{ openresty_image_name }}:{{ openresty_image_tag}}'
+openresty_container_name: openresty
+openresty_conf_dir: /etc/ansible-role-openresty
+openresty_conf: '{{ lookup("template", "nginx.conf") }}'
+openresty_docker_ports:
   - '80:80'
   - '443:443'
   - '9145:9145'
-nginx_docker_additional_ports: []
-nginx_auto_ssl_config: |
+
+# Rate limits
+openresty_rate_limit: 120r/m
+openresty_rate_limit_burst: 20
+
+# SSL
+# cert dir: https://github.com/auto-ssl/lua-resty-auto-ssl#dir
+openresty_docker_volumes:
+  - '{{ openresty_conf_dir }}:{{ openresty_conf_dir }}'
+  - '/etc/resty-auto-ssl:/etc/resty-auto-ssl'
+
+openresty_docker_networks: []
+
+openresty_auto_ssl_config: |
   # Dynamic handler for issuing or returning certs for SNI domains.
   ssl_certificate_by_lua_block {
     auto_ssl:ssl_certificate()
   }
 
-  # You must still define a static ssl_certificate file for nginx to start.
+  # You must still define a static ssl_certificate file for openresty to start.
   ssl_certificate /etc/ssl/resty-auto-ssl-fallback.crt;
   ssl_certificate_key /etc/ssl/resty-auto-ssl-fallback.key;
+
+openresty_includes_builtin: []
+openresty_includes_extras: {}
