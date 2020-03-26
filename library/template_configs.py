@@ -2,9 +2,12 @@
 
 from ansible.module_utils.basic import AnsibleModule
 
+
+
 def main():
     module_args = dict(
         docker_image=dict(type="str", required=True),
+        docker_volumes=dict(type="str", required=True),
         config_dir=dict(type="str", required=True),
         configs=dict(type="list", required=True),
     )

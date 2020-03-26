@@ -6,10 +6,12 @@ Includes opt-in config for rate limiting, Prometheus metrics and default proxy
 config.
 
 # TODO CI
+- assert that conf.d is always relative
 - converge
 - verify
 - idempotence
 - add health checks without duplicate server blocks
+- TODO: warnings
 
 ## Examples
 

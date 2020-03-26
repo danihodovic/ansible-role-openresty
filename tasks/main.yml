@@ -28,6 +28,7 @@
   notify: reload_openresty
   template_configs:
     docker_image: '{{ openresty_image }}'
+    docker_volumes: '{{ openresty_docker_volumes }}'
     config_dir: '{{ openresty_conf_dir }}'
     configs: '{{ openresty_includes }}'
 
@@ -36,6 +37,7 @@
     image: '{{ openresty_image }}'
     name: '{{ openresty_container_name }}'
     restart_policy: unless-stopped
+    network_mode: '{{ openresty_docker_network_mode }}'
     networks: '{{ openresty_docker_networks }}'
     command:
       - 'openresty'
