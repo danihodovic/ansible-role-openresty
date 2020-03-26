@@ -1,6 +1,6 @@
 FROM openresty/openresty:1.15.8.3-0-alpine-fat
 
-RUN cp /usr/local/openresty/bin/openresty /usr/local/bin/
+RUN ln -s /usr/local/openresty/bin/openresty /usr/local/bin/
 
 # SSL dependency
 RUN apk add --update openssl && \
