@@ -28,13 +28,13 @@ config.
     - import_role:
         name: ansible-role-openresty
       vars:
-        openresty_vhosts:
-          default: |
+        openresty_includes_extras:
+          default.conf: |
             server {
               # if no Host match, close the connection to prevent host spoofing
               return 444;
             }
-          myserver: |
+          findwork-dev.conf: |
             server {
               server myserver.org;
               location / {
@@ -42,11 +42,11 @@ config.
                 proxy_pass http://$proxy_address;
               }
             }
-        openresty_includes:
+        openresty_includes_builtin:
           - proxy.conf
           - rate_limit.conf
           - prometheus_metrics.conf
-        docker_networks:
+        openresty_docker_networks:
           - name: test_default
 ```
 
@@ -69,8 +69,8 @@ For running Openresty with auto SSL the following additions are needed:
     - import_role:
         name: ansible-openresty
       vars:
-        openresty_vhosts:
-          findwork-dev: |
+        openresty_includes_extras:
+          findwork-dev.conf: |
             server {
               listen 443 ssl;
               server_name findwork.dev;
@@ -82,13 +82,13 @@ For running Openresty with auto SSL the following additions are needed:
                 proxy_pass http://$proxy_address;
               }
             }
-        openresty_includes:
+        openresty_includes_builtin:
           - ssl.conf
           - proxy.conf
           - logging.conf
         openresty_ssl_domains:
           - findwork.dev
-        docker_networks:
+        openresty_docker_networks:
           - name: test_default
 ```
 
