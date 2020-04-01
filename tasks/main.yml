@@ -13,15 +13,18 @@
     openresty_includes:
       - content: '{{ openresty_conf }}'
         dest: nginx.conf
+  no_log: true
 
 - set_fact:
     openresty_includes: >-
       {{ openresty_includes + [{ "content": item.value, "dest": "conf.d/" + item.key }]}}
+  no_log: true
   loop: '{{ openresty_includes_extras | dict2items }}'
 
 - set_fact:
     openresty_includes: >-
       {{ openresty_includes + [{ "content": lookup("template", item), "dest": "conf.d/" + item }]}}
+  no_log: true
   loop: '{{ openresty_includes_builtin }}'
 
 - name: Template the config files
