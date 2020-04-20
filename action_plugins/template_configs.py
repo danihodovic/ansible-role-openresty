@@ -75,7 +75,7 @@ class ActionModule(ActionBase):
             result["changed"] = True
 
             # Remove old config files for idempotency
-            self._run_cmd("rm -rf {}".format(config_dir + "/*"))
+            self._run_cmd("rm -rf {}".format(config_dir + "/conf.d/*"))
 
             # Template configs
             for entry in configs:

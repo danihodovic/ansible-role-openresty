@@ -14,7 +14,13 @@
       changed_when: false
       file:
         state: touch
-        path: /etc/ansible-role-openresty/conf.d/foo
+        path: /etc/ansible-role-openresty/conf.d/remove
+
+    - name: Create file that persist
+      changed_when: false
+      file:
+        state: touch
+        path: /etc/ansible-role-openresty/persist
 
     - name: Include ansible-role-openresty
       include_role:
