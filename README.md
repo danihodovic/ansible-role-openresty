@@ -1,4 +1,4 @@
-# ansible-openresty
+# ansible-openresty [![Build Status](https://travis-ci.org/danihodovic/ansible-openresty.svg?branch=master)](https://travis-ci.org/danihodovic/ansible-openresty)
 
 Role to deploy a Docker container with Openresty.
 
