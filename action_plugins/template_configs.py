@@ -75,7 +75,8 @@ class ActionModule(ActionBase):
             result["changed"] = True
 
             # Remove old config files for idempotency
-            self._connection._shell.remove(config_dir + "/*", recurse=True)
+            self._run_cmd("rm -rf {}".format(config_dir + "/*"))
+
             # Template configs
             for entry in configs:
                 path = Path(config_dir) / entry["dest"]
@@ -94,6 +95,9 @@ class ActionModule(ActionBase):
 
         else:
             result["changed"] = False
+
+        # Remove temporary files we've created
+        self._run_cmd("rm -rf {}".format(tmp_result["path"]))
 
         return result
 
@@ -142,3 +146,7 @@ class ActionModule(ActionBase):
 
         if res.get("failed"):
             raise AnsibleError(res)
+
+    def _run_cmd(self, cmd):
+        res = self._low_level_execute_command(cmd, sudoable=True)
+        assert res["rc"] == 0
