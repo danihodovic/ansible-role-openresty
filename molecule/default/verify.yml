@@ -19,3 +19,17 @@
       assert:
         that:
           - not foo_stat.stat.exists
+
+    - name: Assert that the temporary directory is removed
+      register: tmp_files
+      find:
+        paths: '/tmp'
+        patterns: 'ansible-role-openresty.*'
+        use_regex: true
+        file_type: 'directory'
+
+    - name: Assert that tmp dir is removed
+      changed_when: false
+      assert:
+        that:
+          - tmp_files.files|length == 0
