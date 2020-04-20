@@ -12,13 +12,22 @@
         - conf.d/proxy.conf
 
     - stat:
-        path: /etc/ansible-role-openresty/conf.d/foo
-      register: foo_stat
+        path: /etc/ansible-role-openresty/conf.d/remove
+      register: remove_stat
 
     - name: Assert that other files are removed
       assert:
         that:
-          - not foo_stat.stat.exists
+          - not remove_stat.stat.exists
+
+    - stat:
+        path: /etc/ansible-role-openresty/persist
+      register: persist_stat
+
+    - name: Assert that files outside of dir persist
+      assert:
+        that:
+          - persist_stat.stat.exists
 
     - name: Assert that the temporary directory is removed
       register: tmp_files
