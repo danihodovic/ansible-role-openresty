@@ -1,0 +1,8 @@
+---
+- name: Destroy
+  hosts: localhost
+  tasks:
+    - name: Remove openresty container
+      docker_container:
+        name: openresty
+        state: absent
