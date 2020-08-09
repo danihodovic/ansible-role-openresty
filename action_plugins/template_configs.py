@@ -57,11 +57,7 @@ class ActionModule(ActionBase):
                 module_args={"state": "directory", "path": str(path.parent)},
             )
             self._copy(
-                tmp=tmp,
-                # task_vars=task_vars,
-                task_vars=None,
-                dest=str(path),
-                content=entry["content"],
+                tmp=tmp, task_vars=None, dest=str(path), content=entry["content"],
             )
 
         new_config = self._check_config(os.path.join(tmp_path, "nginx.conf"))
@@ -85,12 +81,7 @@ class ActionModule(ActionBase):
                     module_args={"state": "directory", "path": str(path.parent)},
                 )
                 self._copy(
-                    tmp=tmp,
-                    task_vars=None,
-                    # tmp=tmp,
-                    # task_vars=task_vars,
-                    dest=str(path),
-                    content=entry["content"],
+                    tmp=tmp, task_vars=None, dest=str(path), content=entry["content"],
                 )
 
         else:
@@ -118,6 +109,7 @@ class ActionModule(ActionBase):
                 "command": ["openresty", "-T", "-c", config_path,],
                 "detach": "false",
                 "cleanup": "true",
+                "log_driver": "json-file",
                 "volumes": (
                     [str(parent_dir) + ":" + str(parent_dir)] + self.docker_volumes
                 ),
