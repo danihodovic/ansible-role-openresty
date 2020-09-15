@@ -22,9 +22,9 @@
         state: touch
         path: /etc/ansible-role-openresty/persist
 
-    - name: Include ansible-role-openresty
+    - name: Include ansible-openresty
       include_role:
-        name: ansible-role-openresty
+        name: ansible-openresty
       vars:
         openresty_includes_extras:
           server.conf: |
