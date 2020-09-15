@@ -29,11 +29,6 @@ config.
         name: ansible-role-openresty
       vars:
         openresty_includes_extras:
-          default.conf: |
-            server {
-              # if no Host match, close the connection to prevent host spoofing
-              return 444;
-            }
           findwork-dev.conf: |
             server {
               server myserver.org;
@@ -75,7 +70,7 @@ For running Openresty with auto SSL the following additions are needed:
               listen 443 ssl;
               server_name findwork.dev;
 
-              {{ nginx_auto_ssl_config|indent(2) }}
+              {{ openresty_auto_ssl_config|indent(2) }}
 
               location / {
                 set $proxy_address mycontainer:5050;
