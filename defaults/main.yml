@@ -3,7 +3,7 @@ openresty_image_name: danihodovic/openresty
 openresty_image_tag: latest
 openresty_image: '{{ openresty_image_name }}:{{ openresty_image_tag}}'
 openresty_container_name: openresty
-openresty_conf_dir: /etc/ansible-role-openresty
+openresty_conf_dir: /opt/openresty
 openresty_conf: '{{ lookup("template", "nginx.conf") }}'
 openresty_docker_ports:
   - '80:80'
