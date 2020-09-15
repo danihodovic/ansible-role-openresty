@@ -30,6 +30,7 @@ def _clean_configs(nginx_config_check_output):
 
 class ActionModule(ActionBase):
     def run(self, tmp=None, task_vars=None):
+        self.task_vars = task_vars
         result = super(ActionModule, self).run(tmp, task_vars)
         module_args = self._task.args.copy()
 
@@ -57,7 +58,7 @@ class ActionModule(ActionBase):
                 module_args={"state": "directory", "path": str(path.parent)},
             )
             self._copy(
-                tmp=tmp, task_vars=None, dest=str(path), content=entry["content"],
+                tmp=tmp, dest=str(path), content=entry["content"],
             )
 
         new_config = self._check_config(os.path.join(tmp_path, "nginx.conf"))
@@ -81,7 +82,7 @@ class ActionModule(ActionBase):
                     module_args={"state": "directory", "path": str(path.parent)},
                 )
                 self._copy(
-                    tmp=tmp, task_vars=None, dest=str(path), content=entry["content"],
+                    tmp=tmp, dest=str(path), content=entry["content"],
                 )
 
         else:
@@ -93,7 +94,8 @@ class ActionModule(ActionBase):
         return result
 
     def _execute(self, *args, **kwargs):
-        res = self._execute_module(*args, **kwargs)
+        task_vars = {**self.task_vars, **kwargs.pop("task_vars", {})}
+        res = self._execute_module(*args, **kwargs, task_vars=task_vars)
         if res.get("failed"):
             raise AnsibleError(res)
         return res
@@ -118,7 +120,7 @@ class ActionModule(ActionBase):
         return _clean_configs(check_config["container"]["Output"])
 
     def _copy(
-        self, tmp, task_vars, dest, src=None, content=None
+        self, tmp, dest, src=None, content=None
     ):  # pylint: disable=too-many-arguments
         task = Task()
         task.args = {
@@ -134,7 +136,7 @@ class ActionModule(ActionBase):
             loader=self._loader,
             templar=self._templar,
             shared_loader_obj=self._shared_loader_obj,
-        ).run(tmp, task_vars)
+        ).run(tmp, self.task_vars)
 
         if res.get("failed"):
             raise AnsibleError(res)
