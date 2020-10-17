@@ -48,3 +48,4 @@
       - -c '{{ openresty_conf_dir }}/nginx.conf'
     volumes: '{{ openresty_docker_volumes }}'
     ports: '{{ openresty_docker_ports }}'
+    labels: '{{ openresty_docker_labels }}'
