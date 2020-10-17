@@ -5,7 +5,7 @@ openresty_image: '{{ openresty_image_name }}:{{ openresty_image_tag}}'
 openresty_container_name: openresty
 openresty_conf_dir: /opt/openresty
 openresty_conf: '{{ lookup("template", "nginx.conf") }}'
-openresty_docker_labels: []
+openresty_docker_labels: {}
 openresty_docker_ports:
   - '80:80'
   - '443:443'
