@@ -1,4 +1,4 @@
-FROM openresty/openresty:1.15.8.3-0-alpine-fat
+FROM openresty/openresty:1.19.3.1-0-alpine-fat
 
 RUN ln -s /usr/local/openresty/bin/openresty /usr/local/bin/
 
