@@ -21,8 +21,9 @@ openresty_docker_volumes:
   - '{{ openresty_conf_dir }}:{{ openresty_conf_dir }}'
   - '/etc/resty-auto-ssl:/etc/resty-auto-ssl'
 
-openresty_docker_network_mode: 'bridge'
+openresty_docker_network_mode: 'host'
 openresty_docker_networks: []
+openresty_resolver: 127.0.0.11
 
 openresty_auto_ssl_config: |
   # Dynamic handler for issuing or returning certs for SNI domains.
@@ -36,3 +37,17 @@ openresty_auto_ssl_config: |
 
 openresty_includes_builtin: []
 openresty_includes_extras: {}
+
+openresty_container: {}
+openresty_container_defaults:
+  image: '{{ openresty_image }}'
+  name: '{{ openresty_container_name }}'
+  restart_policy: unless-stopped
+  network_mode: '{{ openresty_docker_network_mode }}'
+  command:
+    - 'openresty'
+    - -g 'daemon off;'
+    - -c '{{ openresty_conf_dir }}/nginx.conf'
+  volumes: '{{ openresty_docker_volumes }}'
+  ports: '{{ openresty_docker_ports }}'
+  labels: '{{ openresty_docker_labels }}'
