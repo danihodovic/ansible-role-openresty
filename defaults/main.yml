@@ -23,6 +23,7 @@ openresty_docker_volumes:
 
 openresty_docker_network_mode: 'host'
 openresty_docker_networks: []
+openresty_resolver: 127.0.0.11
 
 openresty_auto_ssl_config: |
   # Dynamic handler for issuing or returning certs for SNI domains.
