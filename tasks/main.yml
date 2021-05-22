@@ -35,17 +35,8 @@
     config_dir: '{{ openresty_conf_dir }}'
     configs: '{{ openresty_includes }}'
 
+- set_fact:
+    openresty_container: '{{ openresty_container_defaults | combine(openresty_container) }}'
+
 - name: Start openresty
-  docker_container:
-    image: '{{ openresty_image }}'
-    name: '{{ openresty_container_name }}'
-    restart_policy: unless-stopped
-    network_mode: '{{ openresty_docker_network_mode }}'
-    networks: '{{ openresty_docker_networks }}'
-    command:
-      - 'openresty'
-      - -g 'daemon off;'
-      - -c '{{ openresty_conf_dir }}/nginx.conf'
-    volumes: '{{ openresty_docker_volumes }}'
-    ports: '{{ openresty_docker_ports }}'
-    labels: '{{ openresty_docker_labels }}'
+  docker_container: '{{ openresty_container }}'
